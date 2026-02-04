@@ -1,5 +1,11 @@
+import sys
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Response, Depends, Header
+
+# Fix Windows asyncio subprocess issue
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 from .browser import browser_pool
 from .renderer import render_pdf
