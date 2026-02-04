@@ -41,3 +41,5 @@ build/
 tmp/
 temp/
 *.tmp
+*.pdf
+test_request.json
