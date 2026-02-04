@@ -1,20 +1,17 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+class MarginOptions(BaseModel):
+    top: str = "10mm"
+    bottom: str = "10mm"
+    left: str = "10mm"
+    right: str = "10mm"
 
 class PDFOptions(BaseModel):
     format: str = "A4"
-    margin_top: str = "10mm"
-    margin_bottom: str = "10mm"
-    margin_left: str = "10mm"
-    margin_right: str = "10mm"
+    landscape: bool = False
+    margin: MarginOptions = Field(default_factory=MarginOptions)
     print_background: bool = True
 
-
-class PDFRequest(BaseModel):
+class ConvertRequest(BaseModel):
     html: str
-    options: PDFOptions | None = None
-
-
-class HealthResponse(BaseModel):
-    status: str
-    browser_ready: bool
+    options: PDFOptions = Field(default_factory=PDFOptions)

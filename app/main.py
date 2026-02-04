@@ -1,12 +1,10 @@
 from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException, Response, Depends, Header
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Response
-
-from app.browser import browser_pool
-from app.config import settings
-from app.renderer import render_pdf
-from app.schemas import HealthResponse, PDFRequest
-
+from .browser import browser_pool
+from .renderer import render_pdf
+from .schemas import ConvertRequest
+from .config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -14,23 +12,31 @@ async def lifespan(app: FastAPI):
     yield
     await browser_pool.stop()
 
-
 app = FastAPI(title="PDF Service", lifespan=lifespan)
 
-
-async def verify_api_key(x_api_key: str | None = Header(default=None)):
-    if settings.API_KEY is None:
-        return
-    if x_api_key != settings.API_KEY:
+def verify_api_key(x_api_key: str | None = Header(None)):
+    if settings.api_key and x_api_key != settings.api_key:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
-
-@app.post("/convert")
-async def convert(request: PDFRequest, _: None = Depends(verify_api_key)):
-    pdf_bytes = await render_pdf(request.html, request.options)
-    return Response(content=pdf_bytes, media_type="application/pdf")
-
-
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health")
 async def health():
-    return HealthResponse(status="healthy", browser_ready=browser_pool.is_ready)
+    return {"status": "healthy", "browser_ready": browser_pool.is_ready}
+
+@app.post("/convert", dependencies=[Depends(verify_api_key)])
+async def convert(request: ConvertRequest):
+    if len(request.html.encode()) > settings.max_html_size_bytes:
+        raise HTTPException(status_code=400, detail="HTML too large")
+    
+    if not browser_pool.is_ready:
+        raise HTTPException(status_code=503, detail="Browser not ready")
+    
+    try:
+        pdf_bytes = await render_pdf(request.html, request.options)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Render failed: {str(e)}")
+    
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "inline; filename=document.pdf"}
+    )
