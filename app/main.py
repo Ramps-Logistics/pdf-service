@@ -28,6 +28,14 @@ def verify_api_key(x_api_key: str | None = Header(None)):
 async def health():
     return {"status": "healthy", "browser_ready": browser_pool.is_ready}
 
+@app.get("/status")
+async def status():
+    return {
+        "status": "healthy" if browser_pool.is_ready else "starting",
+        "browser_ready": browser_pool.is_ready,
+        "queue": browser_pool.stats,
+    }
+
 @app.post("/convert", dependencies=[Depends(verify_api_key)])
 async def convert(request: ConvertRequest):
     if len(request.html.encode()) > settings.max_html_size_bytes:
