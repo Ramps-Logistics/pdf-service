@@ -17,10 +17,12 @@ Convert HTML to PDF.
   "html": "<html>...</html>",
   "options": {
     "format": "A4",
-    "margin_top": "10mm",
-    "margin_bottom": "10mm",
-    "margin_left": "10mm",
-    "margin_right": "10mm",
+    "margin": {
+      "top": "10mm",
+      "bottom": "10mm",
+      "left": "10mm",
+      "right": "10mm"
+    },
     "print_background": true
   }
 }
@@ -46,7 +48,7 @@ Health check endpoint.
 |----------|-------------|---------|
 | `API_KEY` | API key for authentication | None |
 | `MAX_BROWSER_CONTEXTS` | Max concurrent PDF renders | 4 |
-| `PORT` | Server port | 8000 |
+| `PORT` | Server port (used by Railway) | 8000 |
 
 ## Local Development
 

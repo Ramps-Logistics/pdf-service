@@ -2,6 +2,7 @@ import asyncio
 import time
 from contextlib import asynccontextmanager
 from playwright.async_api import async_playwright, Browser
+from .config import settings
 
 class BrowserPool:
     def __init__(self, max_contexts: int = 4):
@@ -59,4 +60,4 @@ class BrowserPool:
             "avg_render_time_ms": round(avg_time * 1000, 1),
         }
 
-browser_pool = BrowserPool()
+browser_pool = BrowserPool(max_contexts=settings.max_browser_contexts)

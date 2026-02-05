@@ -3,7 +3,7 @@ import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Response, Depends, Header
 
-# Fix Windows asyncio subprocess issue
+# Fix Windows asyncio subprocess issue (no-op on Linux)
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 

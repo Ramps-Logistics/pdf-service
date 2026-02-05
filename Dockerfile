@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-ENV UV_PYTHON=system
+ENV UV_PYTHON=python3.11
 
 COPY pyproject.toml uv.lock .
 RUN uv sync --no-dev --frozen
@@ -15,4 +15,4 @@ COPY app/ app/
 
 EXPOSE 8000
 
-CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
