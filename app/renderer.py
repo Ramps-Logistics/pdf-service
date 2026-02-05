@@ -6,10 +6,10 @@ async def render_pdf(html: str, options: PDFOptions) -> bytes:
     async with browser_pool.acquire_context() as context:
         page = await context.new_page()
         try:
+            page.set_default_timeout(settings.render_timeout_ms)
             await page.set_content(
                 html,
                 wait_until="networkidle",
-                timeout=settings.render_timeout_ms,
             )
             pdf_bytes = await page.pdf(
                 format=options.format,
@@ -21,7 +21,6 @@ async def render_pdf(html: str, options: PDFOptions) -> bytes:
                     "right": options.margin.right,
                 },
                 print_background=options.print_background,
-                timeout=settings.render_timeout_ms,
             )
             return pdf_bytes
         finally:
