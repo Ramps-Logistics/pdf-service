@@ -8,8 +8,8 @@ ENV UV_PYTHON=python3.11
 
 COPY pyproject.toml uv.lock .
 RUN uv sync --no-dev --frozen
-
-RUN playwright install chromium
+# Install browser binaries using the virtualenv-installed playwright
+RUN uv run playwright install chromium
 
 COPY app/ app/
 
