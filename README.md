@@ -60,6 +60,14 @@ docker build -t pdf-service .
 docker run -p 8000:8000 -e API_KEY=test pdf-service
 ```
 
+## Testing
+
+Run the test suite with pytest:
+
+```bash
+pytest
+```
+
 ## Deploy to Railway
 
 1. Push to GitHub
