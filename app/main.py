@@ -1,5 +1,6 @@
 import sys
 import asyncio
+import time
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Response, Depends, Header
 
@@ -19,6 +20,7 @@ async def lifespan(app: FastAPI):
     await browser_pool.stop()
 
 app = FastAPI(title="PDF Service", lifespan=lifespan)
+_start_time = time.time()
 
 def verify_api_key(x_api_key: str | None = Header(None)):
     if settings.api_key and x_api_key != settings.api_key:
@@ -26,7 +28,11 @@ def verify_api_key(x_api_key: str | None = Header(None)):
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "browser_ready": browser_pool.is_ready}
+    return {
+        "status": "healthy",
+        "browser_ready": browser_pool.is_ready,
+        "uptime_seconds": round(time.time() - _start_time, 1),
+    }
 
 @app.get("/status")
 async def status():
