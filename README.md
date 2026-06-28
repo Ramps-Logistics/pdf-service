@@ -38,7 +38,8 @@ Health check endpoint.
 ```json
 {
   "status": "healthy",
-  "browser_ready": true
+  "browser_ready": true,
+  "uptime_seconds": 3600.5
 }
 ```
 
