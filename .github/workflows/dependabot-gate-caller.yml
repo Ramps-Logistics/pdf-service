@@ -1,0 +1,11 @@
+name: Dependabot gate
+
+on:
+  pull_request:
+
+permissions:
+  vulnerability-alerts: read
+
+jobs:
+  dependabot-gate:
+    uses: Ramps-Logistics/.github/.github/workflows/dependabot-gate.yml@main
